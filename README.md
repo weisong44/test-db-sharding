@@ -10,3 +10,9 @@ This is a test project for database sharding based on Postgres, it has the follo
  - The real datasource is determined when a transaction is started, and no more switch will happen during the transaction. This goes unfortunately for both operations across shema and database. This is fundamentally a limitation of Spring JTA implementation. To overcome this, additional design will be required at service layer.
  - Adequete checks have be built in, in order to avoid objects with wrong shardId being stored in wrong shard
  - Specific to Hibernate, a default shard must be setup in one of the databases (schema: public), this is for initialization reasons
+
+TODO
+====
+ - Add better shard management
+ - Add a service and RESTful layer
+ - Add automatic schema initialization mechanism
