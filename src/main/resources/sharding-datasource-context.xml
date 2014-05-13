@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd">
+
+	<import resource="classpath:base-datasource-context.xml"/>
+
+	<bean id="entityManagerFactory" parent="abstractEntityManagerFactory">
+		<property name="dataSource" ref="dataSource" />
+		<property name="persistenceUnitName" value="persistenceUnit" />
+		<property name="packagesToScan" value="com.weisong.test.routing.data.model"/>
+	</bean>
+
+	<bean id="dataSource" class="com.weisong.test.routing.data.sharding.SimpleRoutingDataSource">
+		<property name="defaultTargetDataSource">
+			<bean class="com.weisong.test.routing.data.sharding.ShardAwareDataSource">
+				<property name="driverClassName" value="org.postgresql.Driver" />
+				<property name="url" value="jdbc:postgresql://${db.host}:5432/${db.name}" />
+				<property name="username" value="${db.username}" />
+				<property name="password" value="${db.password}" />
+				<property name="schema" value="public" />
+			</bean>
+		</property>
+	</bean>
+
+    <bean id="transactionManager" class="com.weisong.test.routing.data.tx.MyJpaTransactionManager">
+     	<constructor-arg ref="entityManagerFactory"/>
+    </bean>
+
+    <jpa:repositories base-package="com.weisong.test.routing.data.repo"
+			entity-manager-factory-ref="entityManagerFactory"
+			transaction-manager-ref="transactionManager"/>
+        
+</beans>
